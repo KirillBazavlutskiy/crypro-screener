@@ -8,6 +8,25 @@
   width: 200px;
   background: #ccc;
   overflow-y: scroll;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar button {
+  width: 100%;
+  padding: 6px 0;
+  background: #131722;
+  color: #fff;
+  border: none;
+}
+
+button.activeSymbol {
+  background: #2962ff;
+}
+
+.navbar::-webkit-scrollbar {
+  display: none;
 }
 
 .grid {

@@ -11,6 +11,7 @@ const TradingViewChart: FC<TradingViewChartProps> = ({ symbol, interval }) => (
     <div className={s.chartContainer}>
         <div className={s.chartContainerInner}>
             <AdvancedRealTimeChart
+                theme={'dark'}
                 symbol={symbol}
                 interval={interval}
                 hide_legend
