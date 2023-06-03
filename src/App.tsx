@@ -13,6 +13,8 @@ function App() {
         axios
             .get<any>("https://api.binance.com/api/v3/exchangeInfo")
             .then((res) => setSymbols(res.data.symbols))
+        axios
+            .get<any>("https://api.binance.com/api/v3/depth/BTCUSDT").then(console.log)
     }, [])
 
     return (

@@ -39,7 +39,7 @@ const StockChart: React.FC<StockChartProps> = ({ symbol, interval}) => {
         const fetchData = async () => {
             try {
                 axios
-                    .get<DataStick[]>(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=400`)
+                    .get<DataStick[]>(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=100`)
                     .then(({ data }) => {
                         setKlines(data.map(candlestick => ({
                             date: new Date(candlestick[0]),
@@ -64,11 +64,11 @@ const StockChart: React.FC<StockChartProps> = ({ symbol, interval}) => {
 
     return (
         <svg ref={svgRef} width={"100%"} height={"100%"} onResize={() => CreateCandleStickChart(svgRef, klines)}>
-            <g className="x-axis" transform="translate(0, 920)" />
-            <g className="y-axis" transform="translate(50, 30)" />
-            <g className="candlestick-group" transform="translate(50, 30)" />
-            <g className="line-high-group" transform="translate(50, 30)" />
-            <g className="line-low-group" transform="translate(50, 30)" />
+            <g className="x-axis" />
+            <g className="y-axis" transform="translate(50, 0)" />
+            <g className="candlestick-group" transform="translate(50, 0)" />
+            <g className="line-high-group" transform="translate(50, 0)" />
+            <g className="line-low-group" transform="translate(50, 0)" />
         </svg>
     );
 };
