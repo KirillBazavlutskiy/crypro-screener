@@ -7,7 +7,7 @@ function App() {
 
     const [symbols, setSymbols] = useState<any[]>([]);
 
-    const [activeSymbol, setActiveSymbol] = useState<string>("BTCUSDT");
+    const [activeSymbol, setActiveSymbol] = useState<string>("ETHBTC");
 
     useEffect(() => {
         axios
@@ -27,10 +27,10 @@ function App() {
                 )
             }</div>
             <div className={s.grid}>
-                <TradingViewChart symbol={activeSymbol} interval={'5'}/>
-                <TradingViewChart symbol={activeSymbol} interval={'60'}/>
-                <TradingViewChart symbol={activeSymbol} interval={'180'}/>
-                <TradingViewChart symbol={activeSymbol} interval={'240'}/>
+                <TradingViewChart symbol={activeSymbol} interval={'5m'} />
+                <TradingViewChart symbol={activeSymbol} interval={'15m'} />
+                <TradingViewChart symbol={activeSymbol} interval={'1h'} />
+                <TradingViewChart symbol={activeSymbol} interval={'2h'} />
             </div>
         </div>
     )
