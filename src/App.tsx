@@ -1,38 +1,52 @@
-import s from './App.module.css'
-import TradingViewChart from "./components/TradingViewChart/TradingViewChart.tsx";
+import s from './App.module.scss'
+import CandleStickChart from "./components/CandleStickChart/CandleStickChart.tsx";
 import {useEffect, useState} from "react";
-import axios from "axios";
+import SolidityScreenerService from "./Services/SolidityScreenerService.ts";
 
 function App() {
 
-    const [symbols, setSymbols] = useState<any[]>([]);
+    const [symbols, setSymbols] = useState<string[]>([]);
 
-    const [activeSymbol, setActiveSymbol] = useState<string>("ETHBTC");
+    const [activeSymbol, setActiveSymbol] = useState<string>("");
+
+    const [solitidyPrices, setSolitidyPrices] = useState<number[]>([]);
 
     useEffect(() => {
-        axios
-            .get<any>("https://api.binance.com/api/v3/exchangeInfo")
-            .then((res) => setSymbols(res.data.symbols))
-        axios
-            .get<any>("https://api.binance.com/api/v3/depth/BTCUSDT").then(console.log)
+        SolidityScreenerService.FindAllSolidity().then(setSymbols);
     }, [])
+
+    useEffect(() => {
+        SolidityScreenerService.FindSolidity(activeSymbol, 0.5).then(solidity => {
+            if (solidity !== null) {
+                setSolitidyPrices([solidity.ask?.priceOnMaxVolume || 0, solidity.bid?.priceOnMaxVolume || 0]);
+            }
+        });
+    }, [activeSymbol])
 
     return (
         <div className={s.container}>
             <div className={s.navbar}>{
                 symbols.map(symbol =>
                     <button
-                        key={symbol.symbol}
-                        onClick={() => setActiveSymbol(symbol.symbol)}
-                        className={activeSymbol === symbol.symbol ? s.activeSymbol : ''}
-                    >{symbol.symbol}</button>
+                        key={symbol}
+                        onClick={() => setActiveSymbol(symbol)}
+                        className={activeSymbol === symbol ? s.activeSymbol : ''}
+                    >{symbol}</button>
                 )
             }</div>
-            <div className={s.grid}>
-                <TradingViewChart symbol={activeSymbol} interval={'5m'} />
-                <TradingViewChart symbol={activeSymbol} interval={'15m'} />
-                <TradingViewChart symbol={activeSymbol} interval={'1h'} />
-                <TradingViewChart symbol={activeSymbol} interval={'2h'} />
+            <div className={s.chartsContainer}>
+                <div className={s.chartContainer}>
+                    <CandleStickChart symbol={activeSymbol} interval={'5m'} solitydyInfo={solitidyPrices} />
+                </div>
+                <div className={s.chartContainer}>
+                    <CandleStickChart symbol={activeSymbol} interval={'30m'} solitydyInfo={solitidyPrices} />
+                </div>
+                <div className={s.chartContainer}>
+                    <CandleStickChart symbol={activeSymbol} interval={'2h'} solitydyInfo={solitidyPrices} />
+                </div>
+                <div className={s.chartContainer}>
+                    <CandleStickChart symbol={activeSymbol} interval={'4h'} solitydyInfo={solitidyPrices} />
+                </div>
             </div>
         </div>
     )
