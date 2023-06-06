@@ -1,7 +1,7 @@
 import axios from "axios";
-import {BinanceDataKline, CandleStickData} from "../Models/BinanceKlines.ts";
-import {FindSolidityFuncReturn, OrderBook} from "../Models/BinanceDepth.ts";
-import {TradingPair} from "../Models/BinanceTicket.ts";
+import {BinanceDataKline, CandleStickData} from "@/Models/BinanceKlines";
+import {FindSolidityFuncReturn, OrderBook} from "@/Models/BinanceDepth";
+import {TradingPair} from "@/Models/BinanceTicket";
 import {Dispatch, SetStateAction} from "react";
 
 export default class SolidityScreenerService {

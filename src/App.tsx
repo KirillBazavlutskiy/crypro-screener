@@ -2,18 +2,14 @@ import s from './App.module.scss'
 import CandleStickChart from "./components/CandleStickChart/CandleStickChart.tsx";
 import {useEffect, useState} from "react";
 import SolidityScreenerService from "./Services/SolidityScreenerService.ts";
+import useSWR from "swr";
 
 function App() {
-
-    const [symbols, setSymbols] = useState<string[]>([]);
+    const { data, isLoading, error } = useSWR<string[]>('symbols', SolidityScreenerService.FindAllSolidity);
 
     const [activeSymbol, setActiveSymbol] = useState<string>("");
 
     const [solitidyPrices, setSolitidyPrices] = useState<number[]>([]);
-
-    useEffect(() => {
-        SolidityScreenerService.FindAllSolidity().then(setSymbols);
-    }, [])
 
     useEffect(() => {
         SolidityScreenerService.FindSolidity(activeSymbol, 0.5).then(solidity => {
@@ -25,15 +21,20 @@ function App() {
 
     return (
         <div className={s.container}>
-            <div className={s.navbar}>{
-                symbols.map(symbol =>
-                    <button
-                        key={symbol}
-                        onClick={() => setActiveSymbol(symbol)}
-                        className={activeSymbol === symbol ? s.activeSymbol : ''}
-                    >{symbol}</button>
-                )
-            }</div>
+            <div className={s.navbar}>
+                {isLoading && <div className={s.loadingSpin}></div>}
+                {
+                    data && data.map(symbol =>
+                        <button
+                            key={symbol}
+                            onClick={() => setActiveSymbol(symbol)}
+                            className={activeSymbol === symbol ? s.activeSymbol : ''}
+                        >{symbol}</button>
+                    )
+                }
+                {error && <h1 className='text-red-700'>Error</h1>}
+            </div>
+
             <div className={s.chartsContainer}>
                 <div className={s.chartContainer}>
                     <CandleStickChart symbol={activeSymbol} interval={'5m'} solitydyInfo={solitidyPrices} />

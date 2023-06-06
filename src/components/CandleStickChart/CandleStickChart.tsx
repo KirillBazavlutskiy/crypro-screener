@@ -1,7 +1,8 @@
+'use client'
 import React, {useEffect, useRef, useState} from "react";
-import SolidityScreenerService from "../../Services/SolidityScreenerService.ts";
-import {CandleStickData} from "../../Models/BinanceKlines.ts";
-import CandleStickChartService from "../../Services/CandleStickChartService.ts";
+import SolidityScreenerService from "../../Services/SolidityScreenerService";
+import {CandleStickData} from "../../Models/BinanceKlines";
+import CandleStickChartService from "../../Services/CandleStickChartService";
 import s from './CandleStickChart.module.css';
 
 interface StockChartProps {

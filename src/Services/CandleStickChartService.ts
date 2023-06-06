@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import {MutableRefObject} from "react";
-import {CandleStickData} from "../Models/BinanceKlines.ts";
+import {CandleStickData} from "@/Models/BinanceKlines";
 
 export default class CandleStickChartService {
     static zoomScale = 1;

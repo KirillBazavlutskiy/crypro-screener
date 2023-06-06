@@ -1,0 +1,8 @@
+.chartsContainer {
+  @apply w-full gap-[10px]
+  grid grid-cols-2 grid-rows-2;
+
+  .chartContainer {
+    @apply w-full h-full rounded-[10px] bg-[#131722];
+  }
+}
