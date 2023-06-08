@@ -38,7 +38,7 @@ export const getStaticProps: GetStaticProps<IndexPageProps> = async () => {
 
     const domen: string = process.env.BINANCE_DOMEN || 'COM';
     const ticker = await BinanceAPI.get<TradingPair[]>('/ticker/24hr');
-    console.log(ticker);
+    console.log(ticker.data);
 
     const symbols = await SolidityScreenerService.FindAllSolidity();
 
