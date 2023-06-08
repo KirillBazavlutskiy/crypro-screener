@@ -3,6 +3,7 @@ import s from './index.module.scss';
 import StockCharts from "@/components/StockCharts/StockCharts";
 import {useState} from "react";
 import {GetStaticProps} from "next";
+import {BinanceAPI} from "@/http";
 
 interface IndexPageProps {
     symbols: string[];
@@ -35,6 +36,9 @@ export default function Index({ symbols }: IndexPageProps) {
 export const getStaticProps: GetStaticProps<IndexPageProps> = async () => {
 
     console.log(process.env.BINANCE_DOMEN);
+
+    const symbols = BinanceAPI.get('/ticker/24hr');
+    console.log(symbols);
 
     try {
         const symbols = await SolidityScreenerService.FindAllSolidity();
