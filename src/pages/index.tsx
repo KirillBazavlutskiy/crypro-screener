@@ -12,6 +12,8 @@ export default function Index({ symbols }: IndexPageProps) {
 
   const [activeSymbol, setActiveSymbol] = useState<string>("");
 
+  console.log(symbols);
+
   return (
       <div className={s.container}>
         <div className={s.navbar}>
@@ -32,9 +34,18 @@ export default function Index({ symbols }: IndexPageProps) {
 }
 
 export const getStaticProps: GetStaticProps<IndexPageProps> = async () => {
-  const symbols = await SolidityScreenerService.FindAllSolidity();
-  return {
-    props: { symbols },
-    revalidate: 300,
+  try {
+      const symbols = await SolidityScreenerService.FindAllSolidity();
+      return {
+          props: { symbols },
+          revalidate: 300,
+      }
+  } catch (e) {
+      return {
+          props: {
+              symbols: [ 'error' ]
+          },
+          revalidate: 300,
+      }
   }
 }
