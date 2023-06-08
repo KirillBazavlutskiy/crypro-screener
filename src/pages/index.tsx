@@ -39,6 +39,8 @@ export const getStaticProps: GetStaticProps<IndexPageProps> = async () => {
         '/ticker/24hr'
     );
 
+    console.log(data);
+
     console.log(data
         .filter(tradingPair => parseFloat(tradingPair.quoteVolume) > 10 ** 8)
         .map(tradingPair => tradingPair.symbol));
