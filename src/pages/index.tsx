@@ -6,12 +6,12 @@ import {GetStaticProps} from "next";
 
 interface IndexPageProps {
     symbols: string[];
-    error: any | null;
 }
 
-export default function Index({ symbols, error }: IndexPageProps) {
+export default function Index({ symbols }: IndexPageProps) {
 
     const [activeSymbol, setActiveSymbol] = useState<string>("");
+    console.log(symbols);
 
     return (
         <div className={s.container}>
@@ -36,14 +36,13 @@ export const getStaticProps: GetStaticProps<IndexPageProps> = async () => {
     try {
         const symbols = await SolidityScreenerService.FindAllSolidity();
         return {
-            props: { symbols, error: null },
+            props: { symbols },
             revalidate: 300,
         }
     } catch (e) {
         return {
             props: {
                 symbols: [ 'error' ],
-                error: e
             },
             revalidate: 300,
         }
