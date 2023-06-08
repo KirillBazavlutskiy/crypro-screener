@@ -37,6 +37,7 @@ export const getStaticProps: GetStaticProps<IndexPageProps> = async () => {
     console.log(process.env.BINANCE_DOMEN);
 
     const symbols = await SolidityScreenerService.FindAllSolidity();
+    console.log(symbols);
     return {
         props: { symbols },
         revalidate: 300,
