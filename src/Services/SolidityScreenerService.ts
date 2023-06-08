@@ -6,18 +6,13 @@ import {BinanceAPI} from "@/http";
 
 export default class SolidityScreenerService {
 	static FetchAllSymbols = async (minVolume: number): Promise<string[]> => {
-		try {
-			const { data } = await BinanceAPI.get<TradingPair[]>(
-				'/ticker/24hr'
-			);
+		const { data } = await BinanceAPI.get<TradingPair[]>(
+			'/ticker/24hr'
+		);
 
-			return data
-				.filter(tradingPair => parseFloat(tradingPair.quoteVolume) > minVolume)
-				.map(tradingPair => tradingPair.symbol);
-		} catch (e) {
-			console.log(e);
-			return [];
-		}
+		return data
+			.filter(tradingPair => parseFloat(tradingPair.quoteVolume) > minVolume)
+			.map(tradingPair => tradingPair.symbol);
 	};
 
 	static StreamKlines = async (
