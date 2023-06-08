@@ -37,7 +37,7 @@ export const getStaticProps: GetStaticProps<IndexPageProps> = async () => {
 
     console.log(process.env.BINANCE_DOMEN);
 
-    const symbols = BinanceAPI.get('/ticker/24hr');
+    const symbols = await BinanceAPI.get('/ticker/24hr');
     console.log(symbols);
 
     try {
