@@ -13,9 +13,6 @@ export default function Index({ symbols, error }: IndexPageProps) {
 
     const [activeSymbol, setActiveSymbol] = useState<string>("");
 
-    console.log(symbols);
-    console.log(error);
-
     return (
         <div className={s.container}>
             <div className={s.navbar}>

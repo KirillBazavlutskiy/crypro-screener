@@ -1,14 +1,14 @@
-import axios from 'axios';
 import { BinanceDataKline, CandleStickData } from '@/Models/BinanceKlines';
 import { FindSolidityFuncReturn, OrderBook } from '@/Models/BinanceDepth';
 import { TradingPair } from '@/Models/BinanceTicket';
 import { Dispatch, SetStateAction } from 'react';
+import {BinanceAPI} from "@/http";
 
 export default class SolidityScreenerService {
 	static FetchAllSymbols = async (minVolume: number): Promise<string[]> => {
 		try {
-			const { data } = await axios.get<TradingPair[]>(
-				'https://api.binance.com/api/v3/ticker/24hr'
+			const { data } = await BinanceAPI.get<TradingPair[]>(
+				'/ticker/24hr'
 			);
 
 			return data
@@ -35,8 +35,8 @@ export default class SolidityScreenerService {
 				console.log('deleted');
 			}
 
-			const { data } = await axios.get<BinanceDataKline[]>(
-				`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`
+			const { data } = await BinanceAPI.get<BinanceDataKline[]>(
+				`/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`
 			);
 			setKlines(
 				data.map(candlestick => ({
@@ -87,8 +87,8 @@ export default class SolidityScreenerService {
 	};
 
 	static FetchOrderBook = async (symbol: string): Promise<OrderBook> => {
-		const { data } = await axios.get<OrderBook>(
-			`https://api.binance.com/api/v3/depth?symbol=${symbol}`
+		const { data } = await BinanceAPI.get<OrderBook>(
+			`/depth?symbol=${symbol}`
 		);
 		return data;
 	};
