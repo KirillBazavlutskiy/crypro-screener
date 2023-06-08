@@ -37,22 +37,9 @@ export const getStaticProps: GetStaticProps<IndexPageProps> = async () => {
 
     console.log(process.env.BINANCE_DOMEN);
 
-    const symbols = await SolidityScreenerService.FetchOrderBook("BTCUSDT");
-
-    console.log(symbols);
-
-    try {
-        const symbols = await SolidityScreenerService.FindAllSolidity();
-        return {
-            props: { symbols },
-            revalidate: 300,
-        }
-    } catch (e) {
-        return {
-            props: {
-                symbols: [ 'error' ],
-            },
-            revalidate: 300,
-        }
+    const symbols = await SolidityScreenerService.FindAllSolidity();
+    return {
+        props: { symbols },
+        revalidate: 300,
     }
 }
