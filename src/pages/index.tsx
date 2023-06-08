@@ -34,10 +34,11 @@ export default function Index({ symbols }: IndexPageProps) {
 
 export const getStaticProps: GetStaticProps<IndexPageProps> = async () => {
 
-    console.log(process.env.BINANCE_DOMEN);
+    const domen: string = process.env.BINANCE_DOMEN || 'COM';
+    console.log(domen);
 
     const symbols = await SolidityScreenerService.FindAllSolidity();
-    console.log(symbols);
+
     return {
         props: { symbols },
         revalidate: 300,
