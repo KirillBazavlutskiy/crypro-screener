@@ -32,7 +32,7 @@ export default function Index({ symbols }: IndexPageProps) {
 }
 
 export const getStaticProps: GetStaticProps<IndexPageProps> = async () => {
-    const symbols = await SolidityScreenerService.FindAllSolidity(10 ** 8, 0.5);
+    const symbols = await SolidityScreenerService.FindAllSolidity(10 ** 5, 0.5);
 
     console.log(symbols);
 
