@@ -42,7 +42,7 @@ export const getStaticProps: GetStaticProps<IndexPageProps> = async () => {
     console.log(
         data
             .filter(tradingPair => {
-                console.log(parseFloat(tradingPair.quoteVolume));
+                console.log(parseFloat(tradingPair.quoteVolume) > 10 ** 8);
                 return parseFloat(tradingPair.quoteVolume) > 10 ** 8;
             })
             .map(tradingPair => tradingPair.symbol)
