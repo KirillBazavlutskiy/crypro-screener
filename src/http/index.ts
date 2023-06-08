@@ -1,9 +1,13 @@
 import axios from "axios";
 
-export const BinanceAPI = axios.create();
+const domen: string = process.env.BINANCE_DOMEN || 'COM';
 
-BinanceAPI.interceptors.request.use(config => {
-    const domen: string = process.env.BINANCE_DOMEN || 'COM';
-    config.baseURL = `https://api.binance.${domen.toLowerCase()}/api/v3`
-    return config;
-})
+export const BinanceAPI = axios.create({
+    baseURL: `https://api.binance.${domen.toLowerCase()}/api/v3`
+});
+
+// BinanceAPI.interceptors.request.use(config => {
+//     const domen: string = process.env.BINANCE_DOMEN || 'COM';
+//     config.baseURL = `https://api.binance.${domen.toLowerCase()}/api/v3`
+//     return config;
+// })

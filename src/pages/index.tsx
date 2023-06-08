@@ -39,14 +39,6 @@ export const getStaticProps: GetStaticProps<IndexPageProps> = async () => {
         '/ticker/24hr'
     );
 
-    console.log(
-        data
-            .filter(tradingPair => {
-                return parseFloat(tradingPair.quoteVolume) > 10 ** 5;
-            })
-            .map(tradingPair => tradingPair.symbol)
-    );
-
     const symbols = await SolidityScreenerService.FindAllSolidity(10 ** 5, 0.5);
 
     return {
