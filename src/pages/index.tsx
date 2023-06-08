@@ -3,7 +3,6 @@ import s from './index.module.scss';
 import StockCharts from "@/components/StockCharts/StockCharts";
 import {useState} from "react";
 import {GetStaticProps} from "next";
-import {BinanceAPI} from "@/http";
 
 interface IndexPageProps {
     symbols: string[];
