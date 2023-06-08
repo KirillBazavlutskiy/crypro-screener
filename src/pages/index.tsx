@@ -2,7 +2,7 @@ import SolidityScreenerService from "@/Services/SolidityScreenerService";
 import s from './index.module.scss';
 import StockCharts from "@/components/StockCharts/StockCharts";
 import {useState} from "react";
-import {GetServerSideProps} from "next";
+import {GetStaticProps} from "next";
 
 interface IndexPageProps {
     symbols: string[];
@@ -35,7 +35,7 @@ export default function Index({ symbols, error }: IndexPageProps) {
     )
 }
 
-export const getServerSideProps: GetServerSideProps<IndexPageProps> = async () => {
+export const getStaticProps: GetStaticProps<IndexPageProps> = async () => {
     try {
         const symbols = await SolidityScreenerService.FindAllSolidity();
         return {
