@@ -35,10 +35,13 @@ export default function Index({ symbols }: IndexPageProps) {
 }
 
 export const getStaticProps: GetStaticProps<IndexPageProps> = async () => {
+    const { data } = await BinanceAPI.get<TradingPair[]>(
+        '/ticker/24hr'
+    );
 
-    const domen: string = process.env.BINANCE_DOMEN || 'COM';
-    const ticker = await SolidityScreenerService.FetchAllSymbols(10 ** 8);
-    console.log(ticker)
+    console.log(data
+        .filter(tradingPair => parseFloat(tradingPair.quoteVolume) > 10 ** 8)
+        .map(tradingPair => tradingPair.symbol));
 
     const symbols = await SolidityScreenerService.FindAllSolidity();
 
