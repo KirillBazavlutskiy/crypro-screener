@@ -11,6 +11,9 @@ export default class SolidityScreenerService {
 		);
 
 		return data
+			.filter(tradingPair => {
+				return tradingPair.symbol.substring(tradingPair.symbol.length - 4, tradingPair.symbol.length) === "USDT"
+			})
 			.filter(tradingPair => parseFloat(tradingPair.quoteVolume) > minVolume)
 			.map(tradingPair => tradingPair.symbol);
 	};

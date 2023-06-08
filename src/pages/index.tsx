@@ -3,8 +3,6 @@ import s from './index.module.scss';
 import StockCharts from "@/components/StockCharts/StockCharts";
 import {useState} from "react";
 import {GetStaticProps} from "next";
-import {BinanceAPI} from "@/http";
-import {TradingPair} from "@/Models/BinanceTicket";
 
 interface IndexPageProps {
     symbols: string[];
@@ -13,7 +11,6 @@ interface IndexPageProps {
 export default function Index({ symbols }: IndexPageProps) {
 
     const [activeSymbol, setActiveSymbol] = useState<string>("");
-    console.log(symbols);
 
     return (
         <div className={s.container}>
@@ -35,11 +32,9 @@ export default function Index({ symbols }: IndexPageProps) {
 }
 
 export const getStaticProps: GetStaticProps<IndexPageProps> = async () => {
-    const { data } = await BinanceAPI.get<TradingPair[]>(
-        '/ticker/24hr'
-    );
+    const symbols = await SolidityScreenerService.FindAllSolidity(10 ** 8, 0.5);
 
-    const symbols = await SolidityScreenerService.FindAllSolidity(10 ** 5, 0.5);
+    console.log(symbols);
 
     return {
         props: { symbols },
