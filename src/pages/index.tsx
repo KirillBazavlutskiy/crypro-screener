@@ -42,13 +42,12 @@ export const getStaticProps: GetStaticProps<IndexPageProps> = async () => {
     console.log(
         data
             .filter(tradingPair => {
-                console.log(parseFloat(tradingPair.quoteVolume) > 10 ** 5);
-                return parseFloat(tradingPair.quoteVolume) > 10 ** 8;
+                return parseFloat(tradingPair.quoteVolume) > 10 ** 5;
             })
             .map(tradingPair => tradingPair.symbol)
     );
 
-    const symbols = await SolidityScreenerService.FindAllSolidity();
+    const symbols = await SolidityScreenerService.FindAllSolidity(10 ** 5, 0.5);
 
     return {
         props: { symbols },

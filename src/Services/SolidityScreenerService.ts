@@ -142,12 +142,12 @@ export default class SolidityScreenerService {
 		}
 	};
 
-	static FindAllSolidity = async () => {
-		const symbols = await this.FetchAllSymbols(10 ** 8);
+	static FindAllSolidity = async (minVolume: number, ratioAccess: number) => {
+		const symbols = await this.FetchAllSymbols(minVolume);
 		const symbolsWithSolidity: string[] = [];
 
 		for (const symbol of symbols) {
-			const solidityInfo = await this.FindSolidity(symbol, 0.5);
+			const solidityInfo = await this.FindSolidity(symbol, ratioAccess);
 			if (solidityInfo !== null) {
 				symbolsWithSolidity.push(symbol);
 			}
