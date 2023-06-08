@@ -3,6 +3,8 @@ import s from './index.module.scss';
 import StockCharts from "@/components/StockCharts/StockCharts";
 import {useState} from "react";
 import {GetStaticProps} from "next";
+import {BinanceAPI} from "@/http";
+import {TradingPair} from "@/Models/BinanceTicket";
 
 interface IndexPageProps {
     symbols: string[];
@@ -35,7 +37,8 @@ export default function Index({ symbols }: IndexPageProps) {
 export const getStaticProps: GetStaticProps<IndexPageProps> = async () => {
 
     const domen: string = process.env.BINANCE_DOMEN || 'COM';
-    console.log(domen);
+    const ticker = await BinanceAPI.get<TradingPair[]>('/ticker/24hr');
+    console.log(ticker);
 
     const symbols = await SolidityScreenerService.FindAllSolidity();
 
