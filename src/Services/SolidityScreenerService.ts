@@ -1,8 +1,8 @@
-import { BinanceDataKline, CandleStickData } from '@/Models/BinanceKlines';
-import { FindSolidityFuncReturn, OrderBook } from '@/Models/BinanceDepth';
-import { TradingPair } from '@/Models/BinanceTicket';
+import { BinanceDataKline, CandleStickData } from '../Models/BinanceKlines';
+import { FindSolidityFuncReturn, OrderBook } from '../Models/BinanceDepth';
+import { TradingPair } from '../Models/BinanceTicket';
 import { Dispatch, SetStateAction } from 'react';
-import {BinanceAPI} from "@/http";
+import {BinanceAPI} from "../http";
 
 export default class SolidityScreenerService {
 	static FetchAllSymbols = async (minVolume: number): Promise<string[]> => {
@@ -95,11 +95,11 @@ export default class SolidityScreenerService {
 		symbol: string,
 		ratioAccess: number
 	): Promise<FindSolidityFuncReturn | null> => {
-		let solidityInfo: FindSolidityFuncReturn = {};
+		const solidityInfo: FindSolidityFuncReturn = {};
 		const orderBook = await this.FetchOrderBook(symbol);
 
-		let sumAsks: number = 0;
-		let maxAsk: number = 0;
+		let sumAsks = 0;
+		let maxAsk = 0;
 		let maxAskPrice = 0;
 		orderBook.asks.forEach(ask => {
 			const volume = parseFloat(ask[1]);
@@ -110,8 +110,8 @@ export default class SolidityScreenerService {
 			}
 		});
 
-		let sumBids: number = 0;
-		let maxBid: number = 0;
+		let sumBids = 0;
+		let maxBid = 0;
 		let maxBidPrice = 0;
 		orderBook.bids.forEach(bid => {
 			const volume = parseFloat(bid[1]);
@@ -149,12 +149,27 @@ export default class SolidityScreenerService {
 		const symbols = await this.FetchAllSymbols(minVolume);
 		const symbolsWithSolidity: string[] = [];
 
-		for (const symbol of symbols) {
-			const solidityInfo = await this.FindSolidity(symbol, ratioAccess);
-			if (solidityInfo !== null) {
-				symbolsWithSolidity.push(symbol);
-			}
+		const startTime = new Date();
+
+		const symbolsGroupLength = 30;
+
+		for (let i = 0; i < symbols.length; i += symbolsGroupLength) {
+			const symbolsGroup =
+				symbols.length - i > symbolsGroupLength ? symbols.slice(i, i + symbolsGroupLength) : symbols.slice(i, symbols.length);
+
+			await Promise.all(
+				symbolsGroup.map(async (symbol) => {
+					const solidityInfo = await this.FindSolidity(symbol, ratioAccess);
+					if (solidityInfo !== null) {
+						symbolsWithSolidity.push(symbol);
+					}
+				})
+			);
 		}
+
+		const endTime = new Date();
+
+		console.log(new Date(endTime.getTime() - startTime.getTime()).getSeconds())
 		return symbolsWithSolidity;
 	};
 }

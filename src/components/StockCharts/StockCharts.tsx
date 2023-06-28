@@ -1,9 +1,7 @@
-'use client';
-
-import React, { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
+import SolidityScreenerService from '../../Services/SolidityScreenerService';
+import CandleStickChart from "../CandleStickChart/CandleStickChart.tsx";
 import s from './StockCharts.module.scss';
-import CandleStickChart from '@/components/CandleStickChart/CandleStickChart';
-import SolidityScreenerService from '@/Services/SolidityScreenerService';
 
 interface StockChartsProps {
 	activeSymbol: string;
@@ -31,28 +29,28 @@ const StockCharts: FC<StockChartsProps> = ({ activeSymbol }) => {
 				<CandleStickChart
 					symbol={activeSymbol}
 					interval={'5m'}
-					solitydyInfo={solitidyPrices}
+					solidityInfo={solitidyPrices}
 				/>
 			</div>
 			<div className={s.chartContainer}>
 				<CandleStickChart
 					symbol={activeSymbol}
 					interval={'30m'}
-					solitydyInfo={solitidyPrices}
+					solidityInfo={solitidyPrices}
 				/>
 			</div>
 			<div className={s.chartContainer}>
 				<CandleStickChart
 					symbol={activeSymbol}
 					interval={'2h'}
-					solitydyInfo={solitidyPrices}
+					solidityInfo={solitidyPrices}
 				/>
 			</div>
 			<div className={s.chartContainer}>
 				<CandleStickChart
 					symbol={activeSymbol}
 					interval={'4h'}
-					solitydyInfo={solitidyPrices}
+					solidityInfo={solitidyPrices}
 				/>
 			</div>
 		</div>

@@ -1,0 +1,67 @@
+.container {
+  @apply w-full h-screen flex gap-[10px] p-[10px] bg-[#0e1017];
+
+  .navbar {
+    @apply rounded-[10px] overflow-hidden min-w-[100px] h-full bg-[#131722] p-[10px];
+
+    .options {
+      @apply bg-[#161b2b] w-full h-[200px] mb-[20px] rounded-[10px] p-[10px]
+      flex flex-col justify-between;
+
+      .labels {
+        label {
+          p {
+            @apply text-[#fff]/60;
+          }
+
+          input {
+            @apply w-full p-[5px] rounded-[7px] transition-colors
+            border-none text-[#fff]/60 bg-[#fff]/20;
+
+            &:focus {
+              @apply text-[#fff] bg-[#fff]/30;
+            }
+          }
+        }
+      }
+
+      button {
+        @apply w-full py-[10px] bg-[#fff]/20 text-[#fff]/60 rounded-[7px] transition-colors;
+
+        &:hover {
+          @apply bg-[#2962ff] text-[#fff];
+        }
+      }
+    }
+
+    .symbolsList {
+      @apply bg-[#161b2b] h-[calc(100%_-_220px)] rounded-[10px]
+      overflow-y-scroll flex flex-col items-center;
+
+      &::-webkit-scrollbar {
+        @apply hidden;
+      }
+
+      .loadingSpinContainer {
+        @apply w-full h-full flex items-center justify-center;
+
+        .loadingSpin {
+          @apply bg-[#fff] w-[30px] h-[30px] border-2 border-[#fff] animate-spin;
+        }
+      }
+
+      button {
+        @apply w-full bg-transparent text-[#fff] border-none py-[5px]
+        transition-colors duration-100;
+
+        &:hover {
+          @apply bg-[#2962ff]/60;
+        }
+
+        &.activeSymbol {
+          @apply bg-[#2962ff];
+        }
+      }
+    }
+  }
+}
