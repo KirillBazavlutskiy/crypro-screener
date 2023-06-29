@@ -16,7 +16,7 @@ function App() {
   const [activeSymbol, setActiveSymbol] = useState<string>("");
 
   const [options, setOptions] = useState({
-      minVolume: `${10 ** 5}`,
+      minVolume: `${20 ** 6}`,
       accessRatio: `${0.5}`
   });
 

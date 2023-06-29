@@ -23,20 +23,13 @@ export default class SolidityScreenerService {
 		interval: string,
 		limit: number,
 		setKlines: Dispatch<SetStateAction<CandleStickData[]>>,
-		klinesStreamSocket: WebSocket | null,
 		setKlinesStreamSocket: Dispatch<SetStateAction<WebSocket | null>>
 	): Promise<void> => {
 		try {
-			if (klinesStreamSocket !== null) {
-				klinesStreamSocket.close();
-				setKlinesStreamSocket(null);
-				console.log('deleted');
-			}
-
 			const { data } = await BinanceAPI.get<BinanceDataKline[]>(
 				`/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`
 			);
-			setKlines(
+			await setKlines(
 				data.map(candlestick => ({
 					date: new Date(candlestick[0]),
 					open: Number(candlestick[1]),
@@ -78,7 +71,7 @@ export default class SolidityScreenerService {
 				}
 			};
 
-			setKlinesStreamSocket(newKlinesStreamSocket);
+			await setKlinesStreamSocket(newKlinesStreamSocket);
 		} catch (e) {
 			console.log(e);
 		}
