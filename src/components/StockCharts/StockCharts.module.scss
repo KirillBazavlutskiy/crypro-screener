@@ -1,8 +1,16 @@
 .chartsContainer {
-  @apply w-full gap-[10px]
-  grid grid-cols-2 grid-rows-2;
+  @apply w-full gap-[10px] h-[50vh] sm:h-full grid
+  grid-cols-1 md:grid-cols-2;
 
   .chartContainer {
-    @apply w-full h-full rounded-[5px] bg-[#131722] overflow-hidden;
+    @apply hidden md:block w-full h-full rounded-[5px] bg-[#131722] overflow-hidden;
+
+    &:nth-child(1) {
+      @apply block;
+    }
+
+    &:nth-child(2) {
+      @apply hidden sm:block;
+    }
   }
 }

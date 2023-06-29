@@ -5,8 +5,8 @@ import {
     ChartCanvas, discontinuousTimeScaleProvider,
     CrossHairCursor, EdgeIndicator,
     lastVisibleItemBasedZoomAnchor,
-    MouseCoordinateY, StraightLine,
-    withSize, OHLCTooltip,
+    MouseCoordinateY,
+    withSize, PriceCoordinate,
 } from "react-financial-charts";
 import {FC, LegacyRef, useEffect, useRef} from "react";
 import {CandleStickData} from "../../Models/BinanceKlines.ts";
@@ -61,6 +61,12 @@ const CanvasChart: FC<CanvasChartProps> = (
             displayXAccessor={displayXAccessor}
             seriesName={`SolidityChart`}
             xScale={xScale}
+            margin={{
+                left: 0,
+                right: 50,
+                top: 0,
+                bottom: 25
+            }}
             xAccessor={xAccessor}
             zoomAnchor={lastVisibleItemBasedZoomAnchor}
             ref={chartRef}
@@ -69,7 +75,7 @@ const CanvasChart: FC<CanvasChartProps> = (
             {/*@ts-ignore*/}
             <Chart id={1} yExtents={(d: CandleStickData) => [d.high, d.low]}>
                 <XAxis
-                    // ticks={3.8}
+                    ticks={3.4}
                     strokeStyle={'#ccc'}
                     tickLabelFill={'#ccc'}
                     tickStrokeStyle={'#ccc'}
@@ -109,12 +115,23 @@ const CanvasChart: FC<CanvasChartProps> = (
                     lineStroke={CalcCandleColor}
                 />
 
-                <OHLCTooltip textFill={'#fff'} origin={[8, 16]} />
-
                 {solidityInfo.map((price, index) => (
-                    <>
-                        <StraightLine strokeStyle={'#ccc'} key={index} yValue={price} />
-                    </>
+                    <PriceCoordinate
+                        key={index}
+                        price={price}
+                        fill={'#fff'}
+                        lineStroke={'#fff'}
+                        orient={"left"}
+                        textFill={'#000'}
+                        stroke={'#000'}
+                        rectWidth={price.toString().length * 8}
+                        yAxisPad={20}
+                        at={'left'}
+                        dx={price.toString().length * 8}
+                        arrowWidth={5}
+                        rectHeight={13}
+                        lineOpacity={50}
+                    />
                 ))}
             </Chart>
             {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}

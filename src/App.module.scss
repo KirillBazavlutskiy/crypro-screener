@@ -1,8 +1,9 @@
 .container {
-  @apply w-full h-screen flex gap-[10px] p-[10px] bg-[#0e1017];
+  @apply w-full h-screen flex flex-col sm:flex-row
+  gap-[10px] p-[10px] bg-[#0e1017];
 
   .navbar {
-    @apply rounded-[10px] overflow-hidden min-w-[100px] h-full bg-[#131722] p-[10px];
+    @apply rounded-[10px] overflow-hidden min-w-[100px] h-[50vh] sm:h-full bg-[#131722] p-[10px];
 
     .options {
       @apply bg-[#161b2b] w-full h-[200px] mb-[20px] rounded-[10px] p-[10px]
@@ -35,7 +36,7 @@
     }
 
     .symbolsList {
-      @apply bg-[#161b2b] h-[calc(100%_-_220px)] rounded-[10px]
+      @apply bg-[#161b2b] h-full sm:h-[calc(100%_-_220px)] rounded-[10px]
       overflow-y-scroll flex flex-col items-center;
 
       &::-webkit-scrollbar {
