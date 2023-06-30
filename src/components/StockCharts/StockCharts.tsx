@@ -2,59 +2,57 @@ import { FC, useEffect, useState } from 'react';
 import SolidityScreenerService from '../../Services/SolidityScreenerService';
 import CandleStickChart from "../CandleStickChart/CandleStickChart.tsx";
 import s from './StockCharts.module.scss';
+import {SolidityModel} from "../../Models/SolidityModels.ts";
 
 interface StockChartsProps {
 	activeSymbol: string;
 }
 
 const StockCharts: FC<StockChartsProps> = ({ activeSymbol }) => {
-	const [solitidyPrices, setSolitidyPrices] = useState<number[]>([]);
+	const [solitidyPrices, setSolitidyPrices] = useState<SolidityModel>();
 
 	useEffect(() => {
 		if (activeSymbol !== '') {
-			SolidityScreenerService.FindSolidity(activeSymbol, 0.5).then(solidity => {
-				if (solidity !== null) {
-					setSolitidyPrices([
-						solidity.ask?.priceOnMaxVolume || 0,
-						solidity.bid?.priceOnMaxVolume || 0,
-					]);
-				}
-			});
+			SolidityScreenerService.FindSolidity(activeSymbol, 0.5).then(setSolitidyPrices);
 		}
 	}, [activeSymbol]);
 
-	return (
-		<div className={s.chartsContainer}>
-			<div className={s.chartContainer}>
-				<CandleStickChart
-					symbol={activeSymbol}
-					interval={'5m'}
-					solidityInfo={solitidyPrices}
-				/>
+	if (solitidyPrices !== undefined) {
+		return (
+			<div className={s.chartsContainer}>
+				<div className={s.chartContainer}>
+					<CandleStickChart
+						symbol={activeSymbol}
+						interval={'5m'}
+						solidityInfo={solitidyPrices}
+					/>
+				</div>
+				<div className={s.chartContainer}>
+					<CandleStickChart
+						symbol={activeSymbol}
+						interval={'30m'}
+						solidityInfo={solitidyPrices}
+					/>
+				</div>
+				<div className={s.chartContainer}>
+					<CandleStickChart
+						symbol={activeSymbol}
+						interval={'2h'}
+						solidityInfo={solitidyPrices}
+					/>
+				</div>
+				<div className={s.chartContainer}>
+					<CandleStickChart
+						symbol={activeSymbol}
+						interval={'4h'}
+						solidityInfo={solitidyPrices}
+					/>
+				</div>
 			</div>
-			<div className={s.chartContainer}>
-				<CandleStickChart
-					symbol={activeSymbol}
-					interval={'30m'}
-					solidityInfo={solitidyPrices}
-				/>
-			</div>
-			<div className={s.chartContainer}>
-				<CandleStickChart
-					symbol={activeSymbol}
-					interval={'2h'}
-					solidityInfo={solitidyPrices}
-				/>
-			</div>
-			<div className={s.chartContainer}>
-				<CandleStickChart
-					symbol={activeSymbol}
-					interval={'4h'}
-					solidityInfo={solitidyPrices}
-				/>
-			</div>
-		</div>
-	);
+		);
+	} else {
+		return <></>
+	}
 };
 
 export default StockCharts;

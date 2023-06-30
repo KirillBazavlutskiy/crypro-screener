@@ -2,6 +2,7 @@ import {useEffect, useState} from 'react'
 import s from './App.module.scss'
 import StockCharts from "./components/StockCharts/StockCharts.tsx";
 import SolidityScreenerService from "./Services/SolidityScreenerService.ts";
+import SquareLoader from "./components/UI/SquareLoader/SquareLoader.tsx";
 
 interface SymbolListType {
     loading: boolean;
@@ -62,10 +63,7 @@ function App() {
               </div>
               <div className={s.symbolsList}>
                   {
-                      symbols.loading &&
-                      <div className={s.loadingSpinContainer}>
-                          <div className={s.loadingSpin} />
-                      </div>
+                      symbols.loading && <SquareLoader />
                   }
                   {
                       !symbols.loading && symbols.symbolList.map(symbol =>

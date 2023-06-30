@@ -43,14 +43,6 @@
         @apply hidden;
       }
 
-      .loadingSpinContainer {
-        @apply w-full h-full flex items-center justify-center;
-
-        .loadingSpin {
-          @apply bg-[#fff] w-[30px] h-[30px] border-2 border-[#fff] animate-spin;
-        }
-      }
-
       button {
         @apply w-full bg-transparent text-[#fff] border-none py-[5px]
         transition-colors duration-100;

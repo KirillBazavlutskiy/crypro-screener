@@ -4,17 +4,17 @@ import {
     Chart, XAxis, YAxis,
     ChartCanvas, discontinuousTimeScaleProvider,
     CrossHairCursor, EdgeIndicator,
-    lastVisibleItemBasedZoomAnchor,
     MouseCoordinateY,
-    withSize, PriceCoordinate,
+    withSize, PriceCoordinate, mouseBasedZoomAnchor,
 } from "react-financial-charts";
 import {FC, LegacyRef, useEffect, useRef} from "react";
 import {CandleStickData} from "../../Models/BinanceKlines.ts";
 import {format} from "d3";
+import {SolidityModel} from "../../Models/SolidityModels.ts";
 
 interface CanvasChartProps {
     data: CandleStickData[];
-    solidityInfo: number[];
+    solidityInfo: SolidityModel;
     CandleColor: {
         up: string;
         down: string;
@@ -68,7 +68,7 @@ const CanvasChart: FC<CanvasChartProps> = (
                 bottom: 25
             }}
             xAccessor={xAccessor}
-            zoomAnchor={lastVisibleItemBasedZoomAnchor}
+            zoomAnchor={mouseBasedZoomAnchor}
             ref={chartRef}
         >
             {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
@@ -90,7 +90,6 @@ const CanvasChart: FC<CanvasChartProps> = (
                     tickStrokeStyle={'#ccc'}
                     tickFormat={format('.2f')}
                     ticks={20}
-                    // strokeWidth={200}/
 
                     showGridLines
                     gridLinesStrokeStyle={'#303030'}
@@ -117,24 +116,44 @@ const CanvasChart: FC<CanvasChartProps> = (
                     lineStroke={CalcCandleColor}
                 />
 
-                {solidityInfo.map((price, index) => (
+                {
+                    solidityInfo.solidityLong?.price &&
                     <PriceCoordinate
-                        key={index}
-                        price={price}
+                        price={solidityInfo.solidityLong?.price}
                         fill={'#fff'}
                         lineStroke={'#fff'}
                         orient={"left"}
                         textFill={'#000'}
                         stroke={'#000'}
-                        rectWidth={price.toString().length * 8}
+                        rectWidth={solidityInfo.solidityLong?.price.toString().length * 8}
                         yAxisPad={20}
                         at={'left'}
-                        dx={price.toString().length * 8}
+                        dx={solidityInfo.solidityLong?.price.toString().length * 8}
                         arrowWidth={5}
                         rectHeight={13}
                         lineOpacity={50}
                     />
-                ))}
+                }
+
+                {
+                    solidityInfo.solidityShort?.price &&
+                    <PriceCoordinate
+                        price={solidityInfo.solidityShort?.price}
+                        fill={'#fff'}
+                        lineStroke={'#fff'}
+                        orient={"left"}
+                        textFill={'#000'}
+                        stroke={'#000'}
+                        rectWidth={solidityInfo.solidityShort?.price.toString().length * 8}
+                        yAxisPad={20}
+                        at={'left'}
+                        dx={solidityInfo.solidityShort?.price.toString().length * 8}
+                        arrowWidth={5}
+                        rectHeight={13}
+                        lineOpacity={50}
+                    />
+                }
+
             </Chart>
             {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
             {/*@ts-ignore*/}

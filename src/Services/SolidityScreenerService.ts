@@ -1,8 +1,9 @@
 import { BinanceDataKline, CandleStickData } from '../Models/BinanceKlines';
-import { FindSolidityFuncReturn, OrderBook } from '../Models/BinanceDepth';
+import { OrderBook } from '../Models/BinanceDepth';
 import { TradingPair } from '../Models/BinanceTicket';
 import { Dispatch, SetStateAction } from 'react';
 import {BinanceAPI} from "../http";
+import {SolidityModel} from "../Models/SolidityModels.ts";
 
 export default class SolidityScreenerService {
 	static FetchAllSymbols = async (minVolume: number): Promise<string[]> => {
@@ -14,9 +15,16 @@ export default class SolidityScreenerService {
 			.filter(tradingPair => {
 				return tradingPair.symbol.substring(tradingPair.symbol.length - 4, tradingPair.symbol.length) === "USDT"
 			})
-			.filter(tradingPair => parseFloat(tradingPair.quoteVolume) > minVolume)
+			.filter(tradingPair => tradingPair.quoteVolume > minVolume)
 			.map(tradingPair => tradingPair.symbol);
 	};
+
+	static GetTicket = async (symbol: string): Promise<TradingPair> => {
+		const { data: ticker } = await BinanceAPI.get<TradingPair>(
+			`/ticker/24hr?symbol=${symbol}`
+		)
+		return ticker;
+	}
 
 	static StreamKlines = async (
 		symbol: string,
@@ -87,9 +95,9 @@ export default class SolidityScreenerService {
 	static FindSolidity = async (
 		symbol: string,
 		ratioAccess: number
-	): Promise<FindSolidityFuncReturn | null> => {
-		const solidityInfo: FindSolidityFuncReturn = {};
+	): Promise<SolidityModel> => {
 		const orderBook = await this.FetchOrderBook(symbol);
+		const { quoteVolume } = await this.GetTicket(symbol);
 
 		let sumAsks = 0;
 		let maxAsk = 0;
@@ -118,24 +126,29 @@ export default class SolidityScreenerService {
 		const solidityOnAsks = maxAsk / (sumAsks / 100) > ratioAccess;
 		const solidityOnBids = maxBid / (sumBids / 100) > ratioAccess;
 
+		const solidityModel: SolidityModel = {
+			symbol: symbol,
+			quoteVolume: quoteVolume,
+			buyVolume: sumAsks,
+			sellVolume: sumBids,
+		}
+
 		if (solidityOnAsks || solidityOnBids) {
 			if (solidityOnAsks) {
-				solidityInfo.ask = {
-					maxVolume: maxAsk,
-					priceOnMaxVolume: maxAskPrice,
+				solidityModel.solidityLong = {
+					price: maxAskPrice,
+					volume: maxAsk,
 				};
 			}
 			if (solidityOnBids) {
-				solidityInfo.bid = {
-					maxVolume: maxBid,
-					priceOnMaxVolume: maxBidPrice,
+				solidityModel.solidityShort = {
+					price: maxBidPrice,
+					volume: maxBid,
 				};
 			}
-
-			return solidityInfo;
-		} else {
-			return null;
 		}
+
+		return solidityModel;
 	};
 
 	static FindAllSolidity = async (minVolume: number, ratioAccess: number) => {
