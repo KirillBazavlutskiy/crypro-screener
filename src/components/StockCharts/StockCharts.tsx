@@ -2,7 +2,6 @@ import { FC, useEffect, useState } from 'react';
 import SolidityScreenerService from '../../Services/SolidityScreenerService';
 import CandleStickChart from "../CandleStickChart/CandleStickChart.tsx";
 import s from './StockCharts.module.scss';
-import * as cn from "classnames";
 
 interface StockChartsProps {
 	activeSymbol: string;
@@ -26,7 +25,7 @@ const StockCharts: FC<StockChartsProps> = ({ activeSymbol }) => {
 
 	return (
 		<div className={s.chartsContainer}>
-			<div className={cn(s.chartContainer, s.firstChat)}>
+			<div className={s.chartContainer}>
 				<CandleStickChart
 					symbol={activeSymbol}
 					interval={'5m'}
