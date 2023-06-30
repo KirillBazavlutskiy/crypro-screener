@@ -75,7 +75,7 @@ const CanvasChart: FC<CanvasChartProps> = (
             {/*@ts-ignore*/}
             <Chart id={1} yExtents={(d: CandleStickData) => [d.high, d.low]}>
                 <XAxis
-                    ticks={3.4}
+                    ticks={3.2}
                     strokeStyle={'#ccc'}
                     tickLabelFill={'#ccc'}
                     tickStrokeStyle={'#ccc'}
@@ -89,6 +89,8 @@ const CanvasChart: FC<CanvasChartProps> = (
                     tickLabelFill={'#ccc'}
                     tickStrokeStyle={'#ccc'}
                     tickFormat={format('.2f')}
+                    ticks={20}
+                    // strokeWidth={200}/
 
                     showGridLines
                     gridLinesStrokeStyle={'#303030'}
