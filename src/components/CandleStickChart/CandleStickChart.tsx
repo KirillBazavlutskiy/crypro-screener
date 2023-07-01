@@ -6,14 +6,16 @@ import SolidityScreenerService from "../../Services/SolidityScreenerService.ts";
 import CanvasChart from "./CanvasChart.tsx";
 import {SolidityModel} from "../../Models/SolidityModels.ts";
 import SquareLoader from "../UI/SquareLoader/SquareLoader.tsx";
+import {TrendInfo} from "../../Models/TrendLines.ts";
 
 interface StockChartProps {
     symbol: string;
     interval: string;
-    solidityInfo: SolidityModel;
+    solidityInfo?: SolidityModel;
+    trendInfo?: TrendInfo;
 }
 
-const CandleStickChart: FC<StockChartProps> = ({ symbol, interval, solidityInfo }) => {
+const CandleStickChart: FC<StockChartProps> = ({ symbol, interval, solidityInfo, trendInfo }) => {
 
     const [data, setKlines] = useState<CandleStickData[]>([]);
     const [klinesStreamSocket, setKlinesStreamSocket] = useState<WebSocket | null>(null);
@@ -26,16 +28,18 @@ const CandleStickChart: FC<StockChartProps> = ({ symbol, interval, solidityInfo 
             setKlinesStreamSocket(null)
             console.log('deleted');
         }
-        if (symbol !== "") SolidityScreenerService
-            .StreamKlines(
-                symbol,
-                interval,
-                5000,
-                setKlines,
-                setKlinesStreamSocket
-            )
-            .then(() => setLoading(false));
-}, [symbol]);
+        if (symbol !== "") {
+            SolidityScreenerService
+                .StreamKlines(
+                    symbol,
+                    interval,
+                    5000,
+                    setKlines,
+                    setKlinesStreamSocket
+                )
+                .then(() => setLoading(false));
+        }
+    }, [symbol]);
 
     if (loading) {
         return <SquareLoader />
@@ -44,6 +48,7 @@ const CandleStickChart: FC<StockChartProps> = ({ symbol, interval, solidityInfo 
             <CanvasChart
                 data={data}
                 solidityInfo={solidityInfo}
+                trendInfo={trendInfo}
                 CandleColor={{
                     up: 'rgba(76, 199, 145, 1)',
                     down: 'rgba(199, 86, 76, 1)'

@@ -1,6 +1,6 @@
 .container {
-  @apply w-full h-screen flex flex-col sm:flex-row
-  gap-[10px] p-[10px] bg-[#0e1017];
+  @apply w-full h-full flex flex-col sm:flex-row
+  gap-[10px] p-[10px] bg-transparent;
 
   .navbar {
     @apply rounded-[10px] overflow-hidden min-w-[100px] h-[50vh] sm:h-full bg-[#131722] p-[10px];

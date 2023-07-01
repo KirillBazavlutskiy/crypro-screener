@@ -4,17 +4,19 @@ import {
     Chart, XAxis, YAxis,
     ChartCanvas, discontinuousTimeScaleProvider,
     CrossHairCursor, EdgeIndicator,
-    MouseCoordinateY,
+    MouseCoordinateY,TrendLine,
     withSize, PriceCoordinate, mouseBasedZoomAnchor,
 } from "react-financial-charts";
 import {FC, LegacyRef, useEffect, useRef} from "react";
 import {CandleStickData} from "../../Models/BinanceKlines.ts";
 import {format} from "d3";
 import {SolidityModel} from "../../Models/SolidityModels.ts";
+import {TrendInfo} from "../../Models/TrendLines.ts";
 
 interface CanvasChartProps {
     data: CandleStickData[];
-    solidityInfo: SolidityModel;
+    solidityInfo?: SolidityModel;
+    trendInfo?: TrendInfo;
     CandleColor: {
         up: string;
         down: string;
@@ -32,6 +34,7 @@ const CanvasChart: FC<CanvasChartProps> = (
     {
         data,
         solidityInfo,
+        trendInfo,
         CandleColor,
         BarColor,
         width,
@@ -45,6 +48,20 @@ const CanvasChart: FC<CanvasChartProps> = (
 
     const CalcCandleColor = (d: CandleStickData) => (d.close > d.open ? CandleColor.up : CandleColor.down);
     const CalcBarColor = (d: CandleStickData) => (d.close > d.open ? BarColor.up : BarColor.down);
+
+    const startDate = new Date(trendInfo?.dates[0] || "");
+    const startCandle: CandleStickData = xScaleData.find((d: CandleStickData) => d.date.getTime() === startDate.getTime());
+
+    const endDate = new Date(trendInfo?.dates[2] || "");
+    const endCandle: CandleStickData = xScaleData.find((d: CandleStickData) => d.date.getTime() === endDate.getTime());
+
+    const trendLine = {
+        start: [startDate.getTime(), !trendInfo?.type ? startCandle.high : startCandle.low],
+        end: [endDate.getTime(), !trendInfo?.type ? endCandle.high : endCandle.low],
+    }
+
+    console.log(trendLine)
+
 
     useEffect(() => {
         if (chartRef.current !== null) {
@@ -115,9 +132,8 @@ const CanvasChart: FC<CanvasChartProps> = (
                     fill={CalcCandleColor}
                     lineStroke={CalcCandleColor}
                 />
-
                 {
-                    solidityInfo.solidityLong?.price &&
+                    solidityInfo && solidityInfo.solidityLong?.price &&
                     <PriceCoordinate
                         price={solidityInfo.solidityLong?.price}
                         fill={'#fff'}
@@ -136,7 +152,7 @@ const CanvasChart: FC<CanvasChartProps> = (
                 }
 
                 {
-                    solidityInfo.solidityShort?.price &&
+                    solidityInfo && solidityInfo.solidityShort?.price &&
                     <PriceCoordinate
                         price={solidityInfo.solidityShort?.price}
                         fill={'#fff'}
@@ -153,7 +169,25 @@ const CanvasChart: FC<CanvasChartProps> = (
                         lineOpacity={50}
                     />
                 }
-
+                {
+                    trendInfo &&
+                    <TrendLine
+                        enabled={false}
+                        snap={false}
+                        type={'LINE'}
+                        snapTo={(d: CandleStickData) => [d.high, d.low]}
+                        trends={[
+                            {
+                                start: [1688120100000, 0.0667],
+                                end: [1688148000000, 0.0667],
+                                appearance: {
+                                    strokeStyle: "#fff"
+                                },
+                                type: 'RAY',
+                            }
+                        ]}
+                    />
+                }
             </Chart>
             {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
             {/*@ts-ignore*/}
