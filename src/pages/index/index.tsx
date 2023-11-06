@@ -35,7 +35,7 @@ const Index = () => {
 
         setInterval(() => {
             fetchSymbols();
-        }, 60000);
+        }, 120000);
     }, []);
 
     return (
