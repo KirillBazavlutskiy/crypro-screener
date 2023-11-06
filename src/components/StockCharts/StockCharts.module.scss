@@ -1,5 +1,5 @@
 .chartsContainer {
-  @apply w-full gap-[10px] h-[50vh] sm:h-full grid
+  @apply w-full sm:w-[calc(100%_-_210px)] gap-[10px] h-[50vh] sm:h-full grid
   grid-cols-1 md:grid-cols-2;
 
   .chartContainer {

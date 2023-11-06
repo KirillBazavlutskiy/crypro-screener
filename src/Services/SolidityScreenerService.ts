@@ -3,41 +3,43 @@ import { OrderBook } from '../Models/BinanceDepth';
 import { TradingPair } from '../Models/BinanceTicket';
 import { Dispatch, SetStateAction } from 'react';
 import {BinanceAPI} from "../http";
-import {SolidityModel} from "../Models/SolidityModels.ts";
+import {SolidityModel, SolidityTicket} from "../Models/SolidityModels.ts";
+import axios from "axios";
 
 export default class SolidityScreenerService {
 	static FetchAllSymbols = async (minVolume: number): Promise<string[]> => {
-		const { data } = await BinanceAPI.get<TradingPair[]>(
-			'/ticker/24hr'
-		);
+		const { data } = await BinanceAPI.get<TradingPair[]>('/ticker/24hr');
+		const { data: futuresExchangeInfo } = await axios.get('https://fapi.binance.com/fapi/v1/exchangeInfo');
+		const futuresSymbols = futuresExchangeInfo.symbols.map((symbolInfo: any) => symbolInfo.symbol);
 
 		return data
+			.filter(tradingPair => !(tradingPair.symbol.includes('BTC') || tradingPair.symbol.includes('ETH') || tradingPair.symbol.includes('USDC')))
+			.filter(tradingPair => futuresSymbols.includes(tradingPair.symbol))
 			.filter(tradingPair => {
 				return tradingPair.symbol.substring(tradingPair.symbol.length - 4, tradingPair.symbol.length) === "USDT"
 			})
-			.filter(tradingPair => tradingPair.quoteVolume > minVolume)
+			.filter(tradingPair => parseFloat(tradingPair.quoteVolume) > minVolume)
 			.map(tradingPair => tradingPair.symbol);
 	};
-
-	static GetTicket = async (symbol: string): Promise<TradingPair> => {
-		const { data: ticker } = await BinanceAPI.get<TradingPair>(
-			`/ticker/24hr?symbol=${symbol}`
-		)
-		return ticker;
-	}
 
 	static StreamKlines = async (
 		symbol: string,
 		interval: string,
 		limit: number,
 		setKlines: Dispatch<SetStateAction<CandleStickData[]>>,
+		klinesStreamSocket: WebSocket | null,
 		setKlinesStreamSocket: Dispatch<SetStateAction<WebSocket | null>>
 	): Promise<void> => {
 		try {
+			if (klinesStreamSocket !== null) {
+				klinesStreamSocket.close();
+				setKlinesStreamSocket(null);
+			}
+
 			const { data } = await BinanceAPI.get<BinanceDataKline[]>(
 				`/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`
 			);
-			await setKlines(
+			setKlines(
 				data.map(candlestick => ({
 					date: new Date(candlestick[0]),
 					open: Number(candlestick[1]),
@@ -53,7 +55,6 @@ export default class SolidityScreenerService {
 			);
 
 			newKlinesStreamSocket.onmessage = event => {
-				console.log(`stream from ${symbol}`);
 				const klineData = JSON.parse(event.data);
 
 				if (klineData.e === 'kline') {
@@ -79,7 +80,7 @@ export default class SolidityScreenerService {
 				}
 			};
 
-			await setKlinesStreamSocket(newKlinesStreamSocket);
+			setKlinesStreamSocket(newKlinesStreamSocket);
 		} catch (e) {
 			console.log(e);
 		}
@@ -94,68 +95,42 @@ export default class SolidityScreenerService {
 
 	static FindSolidity = async (
 		symbol: string,
-		ratioAccess: number
 	): Promise<SolidityModel> => {
 		const orderBook = await this.FetchOrderBook(symbol);
-		const { quoteVolume } = await this.GetTicket(symbol);
 
-		let sumAsks = 0;
-		let maxAsk = 0;
-		let maxAskPrice = 0;
-		orderBook.asks.forEach(ask => {
-			const volume = parseFloat(ask[1]);
-			sumAsks += volume;
-			if (maxAsk < volume) {
-				maxAsk = volume;
-				maxAskPrice = parseFloat(ask[0]);
-			}
-		});
+		const bindNAsks = [ ...orderBook.asks, ...orderBook.bids ];
 
-		let sumBids = 0;
-		let maxBid = 0;
-		let maxBidPrice = 0;
-		orderBook.bids.forEach(bid => {
+
+		let sumOrders = 0;
+		let maxOrder = 0;
+		let maxOrderPrice = 0;
+
+		bindNAsks.forEach(bid => {
 			const volume = parseFloat(bid[1]);
-			sumBids += volume;
-			if (maxBid < volume) {
-				maxBid = volume;
-				maxBidPrice = parseFloat(bid[0]);
+			sumOrders += volume;
+			if (maxOrder < volume) {
+				maxOrder = volume;
+				maxOrderPrice = parseFloat(bid[0]);
 			}
 		});
 
-		const solidityOnAsks = maxAsk / (sumAsks / 100) > ratioAccess;
-		const solidityOnBids = maxBid / (sumBids / 100) > ratioAccess;
+		const solidityRatio = maxOrder / (sumOrders / 100);
 
-		const solidityModel: SolidityModel = {
+		const solidity: SolidityTicket = {
+			price: maxOrderPrice,
+			ratio: solidityRatio,
+			volume: maxOrder,
+		}
+
+		return {
 			symbol: symbol,
-			quoteVolume: quoteVolume,
-			buyVolume: sumAsks,
-			sellVolume: sumBids,
+			solidity: solidity
 		}
-
-		if (solidityOnAsks || solidityOnBids) {
-			if (solidityOnAsks) {
-				solidityModel.solidityLong = {
-					price: maxAskPrice,
-					volume: maxAsk,
-				};
-			}
-			if (solidityOnBids) {
-				solidityModel.solidityShort = {
-					price: maxBidPrice,
-					volume: maxBid,
-				};
-			}
-		}
-
-		return solidityModel;
 	};
 
 	static FindAllSolidity = async (minVolume: number, ratioAccess: number) => {
 		const symbols = await this.FetchAllSymbols(minVolume);
-		const symbolsWithSolidity: string[] = [];
-
-		const startTime = new Date();
+		const symbolsWithSolidity: SolidityModel[] = [];
 
 		const symbolsGroupLength = 30;
 
@@ -165,17 +140,13 @@ export default class SolidityScreenerService {
 
 			await Promise.all(
 				symbolsGroup.map(async (symbol) => {
-					const solidityInfo = await this.FindSolidity(symbol, ratioAccess);
-					if (solidityInfo !== null) {
-						symbolsWithSolidity.push(symbol);
+					const solidityModel = await this.FindSolidity(symbol);
+					if (solidityModel.solidity.ratio > ratioAccess) {
+						symbolsWithSolidity.push(solidityModel);
 					}
 				})
 			);
 		}
-
-		const endTime = new Date();
-
-		console.log(new Date(endTime.getTime() - startTime.getTime()).getSeconds())
 		return symbolsWithSolidity;
 	};
 }

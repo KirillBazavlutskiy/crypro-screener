@@ -14,7 +14,7 @@ export interface TradingPair {
     highPrice: number;
     lowPrice: number;
     volume: number;
-    quoteVolume: number;
+    quoteVolume: string;
     openTime: number;
     closeTime: number;
     firstId: number;

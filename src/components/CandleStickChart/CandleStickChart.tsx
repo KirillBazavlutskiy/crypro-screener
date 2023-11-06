@@ -6,16 +6,14 @@ import SolidityScreenerService from "../../Services/SolidityScreenerService.ts";
 import CanvasChart from "./CanvasChart.tsx";
 import {SolidityModel} from "../../Models/SolidityModels.ts";
 import SquareLoader from "../UI/SquareLoader/SquareLoader.tsx";
-import {TrendInfo} from "../../Models/TrendLines.ts";
 
 interface StockChartProps {
     symbol: string;
     interval: string;
     solidityInfo?: SolidityModel;
-    trendInfo?: TrendInfo;
 }
 
-const CandleStickChart: FC<StockChartProps> = ({ symbol, interval, solidityInfo, trendInfo }) => {
+const CandleStickChart: FC<StockChartProps> = ({ symbol, interval, solidityInfo}) => {
 
     const [data, setKlines] = useState<CandleStickData[]>([]);
     const [klinesStreamSocket, setKlinesStreamSocket] = useState<WebSocket | null>(null);
@@ -26,7 +24,6 @@ const CandleStickChart: FC<StockChartProps> = ({ symbol, interval, solidityInfo,
         if (klinesStreamSocket !== null) {
             klinesStreamSocket.close();
             setKlinesStreamSocket(null)
-            console.log('deleted');
         }
         if (symbol !== "") {
             SolidityScreenerService
@@ -35,6 +32,7 @@ const CandleStickChart: FC<StockChartProps> = ({ symbol, interval, solidityInfo,
                     interval,
                     5000,
                     setKlines,
+                    klinesStreamSocket,
                     setKlinesStreamSocket
                 )
                 .then(() => setLoading(false));
@@ -48,7 +46,6 @@ const CandleStickChart: FC<StockChartProps> = ({ symbol, interval, solidityInfo,
             <CanvasChart
                 data={data}
                 solidityInfo={solidityInfo}
-                trendInfo={trendInfo}
                 CandleColor={{
                     up: 'rgba(76, 199, 145, 1)',
                     down: 'rgba(199, 86, 76, 1)'

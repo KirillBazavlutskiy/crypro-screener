@@ -1,13 +1,10 @@
 export interface SolidityModel {
     symbol: string;
-    quoteVolume: number;
-    buyVolume: number;
-    sellVolume: number;
-    solidityLong?: SolidityTicket;
-    solidityShort?: SolidityTicket;
+    solidity: SolidityTicket;
 }
 
 export interface SolidityTicket {
     price: number;
+    ratio: number;
     volume: number;
 }

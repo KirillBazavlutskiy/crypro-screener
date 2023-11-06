@@ -3,10 +3,11 @@ import SolidityScreenerService from "../../Services/SolidityScreenerService.ts";
 import s from './index.module.scss';
 import SquareLoader from "../../components/UI/SquareLoader/SquareLoader.tsx";
 import StockCharts from "../../components/StockCharts/StockCharts.tsx";
+import {SolidityModel} from "../../Models/SolidityModels.ts";
 
 interface SymbolListType {
     loading: boolean;
-    symbolList: string[];
+    symbolList: SolidityModel[];
 }
 
 const Index = () => {
@@ -17,8 +18,8 @@ const Index = () => {
     const [activeSymbol, setActiveSymbol] = useState<string>("");
 
     const [options, setOptions] = useState({
-        minVolume: `${20 ** 6}`,
-        accessRatio: `${0.5}`
+        minVolume: `${50000}`,
+        accessRatio: `${30}`
     });
 
     const fetchSymbols = async () => {
@@ -31,6 +32,10 @@ const Index = () => {
 
     useEffect(() => {
         fetchSymbols();
+
+        setInterval(() => {
+            fetchSymbols();
+        }, 60000);
     }, []);
 
     return (
@@ -61,18 +66,21 @@ const Index = () => {
                     </div>
                     <button onClick={() => fetchSymbols()}>Search</button>
                 </div>
-                <div className={s.symbolsList}>
+                <ul className={s.symbolsList}>
                     {
                         symbols.loading ? <SquareLoader /> :
-                            symbols.symbolList.map(symbol =>
-                                <button
-                                    key={symbol}
-                                    onClick={() => setActiveSymbol(symbol)}
-                                    className={activeSymbol === symbol ? s.activeSymbol : ''}
-                                >{symbol}</button>
+                            symbols.symbolList.map(solidityModel =>
+                                <li
+                                    key={solidityModel.symbol}
+                                    onClick={() => setActiveSymbol(solidityModel.symbol)}
+                                    className={activeSymbol === solidityModel.symbol ? s.activeSymbol : ''}
+                                >
+                                    <p>{solidityModel.symbol}</p>
+                                    <p>{solidityModel.solidity.ratio.toFixed(1)}</p>
+                                </li>
                             )
                     }
-                </div>
+                </ul>
             </div>
 
             <StockCharts activeSymbol={activeSymbol} />

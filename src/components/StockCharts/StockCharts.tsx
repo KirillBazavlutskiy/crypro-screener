@@ -11,9 +11,14 @@ interface StockChartsProps {
 const StockCharts: FC<StockChartsProps> = ({ activeSymbol }) => {
 	const [solitidyPrices, setSolitidyPrices] = useState<SolidityModel>();
 
+	const fetchSolidity = async () => {
+		const solidity= await SolidityScreenerService.FindSolidity(activeSymbol);
+		setSolitidyPrices(solidity);
+	}
+
 	useEffect(() => {
 		if (activeSymbol !== '') {
-			SolidityScreenerService.FindSolidity(activeSymbol, 0.5).then(setSolitidyPrices);
+			fetchSolidity();
 		}
 	}, [activeSymbol]);
 
